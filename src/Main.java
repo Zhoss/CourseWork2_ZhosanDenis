@@ -33,7 +33,7 @@ public class Main {
     }
 
     private static void inputTask(Scanner scanner, Map<Integer, DiaryTask> map) {
-        scanner.useDelimiter("\n");
+//        scanner.useDelimiter("\n");
 
         System.out.print("Введите название задачи: ");
         String taskName = null;

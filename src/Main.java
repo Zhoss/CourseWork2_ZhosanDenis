@@ -36,72 +36,124 @@ public class Main {
         scanner.useDelimiter("\n");
 
         System.out.print("Введите название задачи: ");
-        String taskName = null;
-        if (!scanner.next().isEmpty() && !scanner.next().isBlank()) {
-            taskName = scanner.next();
-        } else {
-            System.out.println("Необходимо ввести название задачи");
+        String taskName = scanner.next();
+        if (taskName.isBlank()) {
+            System.out.println("Необходимо ввести название задачи!!!");
+            scanner.close();
         }
 
         System.out.print("Введите описание задачи: ");
         String taskDescription = scanner.next();
+        if (taskDescription.isBlank()) {
+            System.out.println("Необходимо ввести описание задачи!!!");
+            scanner.close();
+        }
 
-        System.out.print("Введите тип задачи (личная/рабочая): ");
-        String taskType = scanner.next();
+        System.out.print("Введите тип задачи (1 - личная/2 - рабочая): ");
+        String taskType = null;
+        if (scanner.hasNextInt()) {
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    taskType = "личная";
+                    break;
+                case 2:
+                    taskType = "рабочая";
+                    break;
+                default:
+                    System.out.println("Данные введены некорректно");
+                    scanner.close();
+            }
+        } else {
+            System.out.println("Необходимо ввести тип задачи(личная/рабочая)!!!");
+            scanner.close();
+        }
 
         System.out.print("Введите дату выполнения (год): ");
         int taskYear = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskYear = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Дата (год) должна быть числом");
-//            scanner.reset();
+            if (taskYear <= 2020 || taskYear > 2100) {
+                System.out.println("Дата (год) должна быть числом");
+                scanner.close();
+            }
         }
 
         System.out.print("Введите дату выполнения (месяц): ");
         int taskMonth = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskMonth = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Дата (месяц) должна быть числом");
-//            scanner.reset();
+            if (taskMonth < 1 || taskMonth > 12) {
+                System.out.println("Дата (месяц) должна быть числом");
+                scanner.close();
+            }
         }
 
         System.out.print("Введите дату выполнения (день месяца): ");
         int taskDay = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskDay = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Дата (день месяца) должна быть числом");
-//            scanner.reset();
+            if (taskDay < 1 || taskDay > 31) {
+                System.out.println("Дата (день месяца) должна быть числом");
+                scanner.close();
+            }
         }
 
         System.out.print("Введите время выполнения (час): ");
         int taskHour = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskHour = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Время (час) должно быть числом");
-//            scanner.reset();
+            if (taskHour < 0 || taskHour > 23) {
+                System.out.println("Время (час) должно быть числом");
+                scanner.close();
+            }
         }
 
         System.out.print("Введите время выполнения (минуты): ");
         int taskMinute = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskMinute = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Время (минуты) должно быть числом");
-//            scanner.reset();
+            if (taskMinute < 0 || taskMinute >= 60) {
+                System.out.println("Время (минуты) должно быть числом");
+                scanner.close();
+            }
         }
 
-        System.out.print("Введите повторяемость задачи (однократно/каждый день/каждую неделю/каждый месяц/каждый год): ");
-        String taskRepeatability = scanner.next();
+        System.out.print("Введите повторяемость задачи (1 - однократно/2 - каждый день/3 - каждую неделю/4 - каждый месяц/5 - каждый год): ");
+        String taskRepeatability = null;
+        if (scanner.hasNextInt()) {
+            int choice = scanner.nextInt();
+            switch (choice) {
+                case 1:
+                    taskRepeatability = "однократно";
+                    break;
+                case 2:
+                    taskRepeatability = "каждый день";
+                    break;
+                case 3:
+                    taskRepeatability = "каждую неделю";
+                    break;
+                case 4:
+                    taskRepeatability = "каждый месяц";
+                    break;
+                case 5:
+                    taskRepeatability = "каждый год";
+                    break;
+                default:
+                    System.out.println("Данные введены некорректно");
+                    scanner.close();
+            }
+        } else {
+            System.out.println("Необходимо ввести повторяемость задачи (однократно/каждый день/каждую неделю/каждый месяц/каждый год)");
+            scanner.close();
+        }
 
         DiaryTask diaryTask = new DiaryTask(taskName, taskDescription, taskType, taskYear, taskMonth, taskDay, taskHour, taskMinute, taskRepeatability);
         map.put(diaryTask.getId(), diaryTask);
     }
 
     public static void deleteTask(Scanner scanner, Map<Integer, DiaryTask> map) {
+        System.out.println("Все существующие задачи:");
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<Integer, DiaryTask> taskEntry : map.entrySet()) {
             builder.append("id = ").append(taskEntry.getKey()).append(" --> ").append(taskEntry.getValue());
@@ -110,20 +162,21 @@ public class Main {
         System.out.println(builder);
 
         System.out.print("Введите id задачи, которую хотите удалить (0 - выход): ");
-        int taskID = 0;
-        try {
+        int taskID;
+        if (scanner.hasNextInt()) {
             taskID = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("ID должен быть числом");
-            scanner.reset();
-        }
-        if (map.containsKey(taskID)) {
-            map.remove(taskID);
-        } else if (taskID == 0) {
-            System.out.println("\n");
+            if (taskID == 0) {
+                System.out.println("\n");
+            } else if (map.containsKey(taskID)) {
+                map.remove(taskID);
+                System.out.println("Задача с ID = " + taskID + " удалена");
+            } else {
+                System.out.println("ID задачи не найдено");
+                deleteTask(scanner, map);
+            }
         } else {
-            System.out.println("Укажите верный ID задачи");
-            scanner.reset();
+            System.out.println("ID задачи указан некорректно");
+            scanner.close();
         }
     }
 
@@ -132,29 +185,32 @@ public class Main {
 
         System.out.print("Введите дату искомой задачи (год): ");
         int taskYear = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskYear = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Дата (год) должна быть числом");
-            scanner.reset();
+            if (taskYear <= 2020 || taskYear > 2100) {
+                System.out.println("Дата (год) должна быть числом");
+                scanner.close();
+            }
         }
 
         System.out.print("Введите дату искомой задачи (месяц): ");
         int taskMonth = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskMonth = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Дата (месяц) должна быть числом");
-            scanner.reset();
+            if (taskMonth < 1 || taskMonth > 12) {
+                System.out.println("Дата (месяц) должна быть числом");
+                scanner.close();
+            }
         }
 
         System.out.print("Введите дату искомой задачи (день месяца): ");
         int taskDay = 0;
-        try {
+        if (scanner.hasNextInt()) {
             taskDay = scanner.nextInt();
-        } catch (InputMismatchException e) {
-            System.out.println("Дата (день месяца) должна быть числом");
-            scanner.reset();
+            if (taskDay < 1 || taskDay > 31) {
+                System.out.println("Дата (день месяца) должна быть числом");
+                scanner.close();
+            }
         }
 
         int taskCounter = 0;

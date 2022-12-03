@@ -83,7 +83,7 @@ public class DiaryTask implements TaskRepeats {
     }
 
     public void setTaskTime(int year, int month, int day, int hour, int minute) {
-        if (year > 0 && year <= 2100 && month >= 1 && month <= 12 && hour >= 0 && hour <= 23 && minute >= 0 && minute < 60) {
+        if (year > 2020 && year <= 2100 && month >= 1 && month <= 12 && day >= 1 && day <= 31 && hour >= 0 && hour <= 23 && minute >= 0 && minute < 60) {
             if (LocalDateTime.of(year, month, day, hour, minute).isAfter(LocalDateTime.now())) {
                 this.taskTime = LocalDateTime.of(year, month, day, hour, minute);
             } else {

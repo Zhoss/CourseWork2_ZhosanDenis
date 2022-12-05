@@ -1,7 +1,4 @@
-import java.time.LocalDateTime;
-
-public interface TaskRepeats {
-    enum TaskRepeatability {
+public enum TaskRepeatability {
         ONCE("однократно"),
         EVERY_DAY("каждый день"),
         EVERY_WEEK("каждую неделю"),
@@ -29,5 +26,3 @@ public interface TaskRepeats {
         }
     }
 
-    LocalDateTime getTaskNextTime();
-}

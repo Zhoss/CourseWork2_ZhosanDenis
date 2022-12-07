@@ -6,6 +6,7 @@ public abstract class Task {
     private String description;
     private TaskType taskType;
     private LocalDateTime taskTime;
+    private boolean deleted;
     private final int id;
     private static int taskCounter = 0;
 
@@ -14,6 +15,7 @@ public abstract class Task {
         setDescription(description);
         setTaskType(taskType);
         setTaskTime(year, month, day, hour, minute);
+        this.deleted = false;
         taskCounter++;
         this.id = taskCounter;
     }
@@ -34,6 +36,10 @@ public abstract class Task {
 
     public LocalDateTime getTaskTime() {
         return taskTime;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
     }
 
     public int getId() {
@@ -72,6 +78,10 @@ public abstract class Task {
         } else {
             throw new IllegalArgumentException("Укажите корректные дату и время");
         }
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Override

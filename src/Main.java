@@ -1,7 +1,6 @@
 import java.time.LocalDate;
 import java.util.*;
 
-
 public class Main {
     public static void main(String[] args) {
         Map<Integer, Task> diary = new HashMap<>();
@@ -21,6 +20,15 @@ public class Main {
                             break;
                         case 3:
                             findTask(scanner, diary);
+                            break;
+                        case 4:
+                            editTask(scanner, diary);
+                            break;
+                        case 5:
+                            printSortedByDateTasks(diary);
+                            break;
+                        case 6:
+                            printDeletedTasks(diary);
                             break;
                         case 0:
                             break label;
@@ -169,8 +177,10 @@ public class Main {
         System.out.println("Все существующие задачи:");
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<Integer, Task> taskEntry : map.entrySet()) {
-            builder.append("id = ").append(taskEntry.getKey()).append(" --> ").append(taskEntry.getValue());
-            builder.append("\n");
+            if (!taskEntry.getValue().isDeleted()) {
+                builder.append("id = ").append(taskEntry.getKey()).append(" --> ").append(taskEntry.getValue());
+                builder.append("\n");
+            }
         }
         System.out.println(builder);
 
@@ -181,7 +191,7 @@ public class Main {
             if (taskID == 0) {
                 System.out.println("\n");
             } else if (map.containsKey(taskID)) {
-                map.remove(taskID);
+                map.get(taskID).setDeleted(true);
                 System.out.println("Задача с ID = " + taskID + " удалена");
             } else {
                 System.out.println("ID задачи не найдено");
@@ -238,6 +248,87 @@ public class Main {
         printDelimiter();
     }
 
+    public static void editTask(Scanner scanner, Map<Integer, Task> map) {
+        System.out.println("Все существующие задачи:");
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<Integer, Task> taskEntry : map.entrySet()) {
+            if (!taskEntry.getValue().isDeleted()) {
+                builder.append("id = ").append(taskEntry.getKey()).append(" --> ").append(taskEntry.getValue());
+                builder.append("\n");
+            }
+        }
+        System.out.println(builder);
+
+        System.out.print("Введите id задачи, которую хотите редактировать (0 - выход): ");
+        int taskID;
+        if (scanner.hasNextInt()) {
+            taskID = scanner.nextInt();
+            if (taskID == 0) {
+                System.out.println("\n");
+            } else if (map.containsKey(taskID)) {
+                System.out.print("Новое название задачи: ");
+                String taskNewName = scanner.next();
+                if (taskNewName.isBlank()) {
+                    System.out.println("Необходимо ввести название задачи!!!");
+                    scanner.close();
+                }
+                map.get(taskID).setHeadline(taskNewName);
+
+                System.out.print("Новое описание задачи: ");
+                String taskNewDescription = scanner.next();
+                if (taskNewDescription.isBlank()) {
+                    System.out.println("Необходимо ввести описание задачи!!!");
+                    scanner.close();
+                }
+                map.get(taskID).setDescription(taskNewDescription);
+            } else {
+                System.out.println("ID задачи не найдено");
+                editTask(scanner, map);
+            }
+        } else {
+            System.out.println("ID задачи указан некорректно");
+            scanner.close();
+        }
+    }
+
+    public static void printSortedByDateTasks(Map<Integer, Task> map) {
+        Comparator<Task> comparator = new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                return o1.getTaskTime().compareTo(o2.getTaskTime());
+            }
+        };
+        List<Task> list = new ArrayList<>(map.values());
+        list.sort(comparator);
+
+        Set<LocalDate> dates = new LinkedHashSet<>();
+        for (Task task : list) {
+            dates.add(task.getTaskTime().toLocalDate());
+        }
+        printDelimiter();
+        for (LocalDate date : dates) {
+            System.out.println(date + ": ");
+            for (Task task : list) {
+                if (task.getTaskTime().toLocalDate().equals(date)) {
+                    System.out.println(task.getHeadline() + ", " + task.getDescription() + ", время " + task.getTaskTime().toLocalTime());
+                }
+            }
+        }
+        printDelimiter();
+    }
+
+    public static void printDeletedTasks(Map<Integer, Task> map) {
+        System.out.println("Все удаленные задачи:");
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<Integer, Task> taskEntry : map.entrySet()) {
+            if (taskEntry.getValue().isDeleted()) {
+                builder.append("id = ").append(taskEntry.getKey()).append(" --> ").append(taskEntry.getValue());
+                builder.append("\n");
+            }
+        }
+        System.out.println(builder);
+    }
+
     private static void printDelimiter() {
         System.out.println("******************************");
     }
@@ -248,6 +339,9 @@ public class Main {
                         1. Добавить задачу
                         2. Удалить задачу
                         3. Получить задачу на указанный день
+                        4. Редактировать задачу
+                        5. Посмотреть задачи по датам
+                        6. Посмотреть удаленные задачи
                         0. Выход
                         """
         );

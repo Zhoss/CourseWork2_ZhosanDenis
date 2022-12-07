@@ -1,27 +1,24 @@
 import java.time.LocalDateTime;
 import java.util.Objects;
-import TaskRepeatability.*;
 
-public class DiaryTask {
+public abstract class Task {
     private String headline;
     private String description;
     private TaskType taskType;
     private LocalDateTime taskTime;
-    private TaskRepeatability repeatability;
-    private Task task;
     private final int id;
     private static int taskCounter = 0;
 
-    public DiaryTask(String headline, String description, String taskType, int year, int month, int day, int hour, int minute, String repeatability) {
+    public Task(String headline, String description, String taskType, int year, int month, int day, int hour, int minute) {
         setHeadline(headline);
         setDescription(description);
         setTaskType(taskType);
         setTaskTime(year, month, day, hour, minute);
-        setRepeatability(repeatability);
-        setTask(repeatability);
         taskCounter++;
         this.id = taskCounter;
     }
+
+    public abstract LocalDateTime getTaskNextTime();
 
     public String getHeadline() {
         return headline;
@@ -37,14 +34,6 @@ public class DiaryTask {
 
     public LocalDateTime getTaskTime() {
         return taskTime;
-    }
-
-    public String getRepeatability() {
-        return repeatability.getTaskRepeatabilityString();
-    }
-
-    public Task getTask() {
-        return task;
     }
 
     public int getId() {
@@ -85,37 +74,17 @@ public class DiaryTask {
         }
     }
 
-    public void setRepeatability(String repeatability) {
-        if (repeatability != null && !repeatability.isEmpty() && !repeatability.isBlank()) {
-            this.repeatability = TaskRepeatability.findTaskRepeatability(repeatability);
-        }
-    }
-
-    public void setTask(String taskRepeatability) {
-        if (taskRepeatability.equals(TaskRepeatability.ONCE.getTaskRepeatabilityString())) {
-            this.task = new OnceTask(getTaskTime());
-        } else if (taskRepeatability.equals(TaskRepeatability.EVERY_DAY.getTaskRepeatabilityString())) {
-            this.task = new DailyTask(getTaskTime());
-        } else if (taskRepeatability.equals(TaskRepeatability.EVERY_WEEK.getTaskRepeatabilityString())) {
-            this.task = new WeeklyTask(getTaskTime());
-        } else if (taskRepeatability.equals(TaskRepeatability.EVERY_MONTH.getTaskRepeatabilityString())) {
-            this.task = new MonthlyTask(getTaskTime());
-        } else if (taskRepeatability.equals(TaskRepeatability.EVERY_YEAR.getTaskRepeatabilityString())) {
-            this.task = new YearlyTask(getTaskTime());
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DiaryTask diaryTask = (DiaryTask) o;
-        return id == diaryTask.id && Objects.equals(headline, diaryTask.headline) && Objects.equals(description, diaryTask.description) && taskType == diaryTask.taskType && Objects.equals(taskTime, diaryTask.taskTime) && repeatability == diaryTask.repeatability && Objects.equals(task, diaryTask.task);
+        Task task = (Task) o;
+        return id == task.id && Objects.equals(headline, task.headline) && Objects.equals(description, task.description) && taskType == task.taskType && Objects.equals(taskTime, task.taskTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(headline, description, taskType, taskTime, repeatability, task, id);
+        return Objects.hash(headline, description, taskType, taskTime, id);
     }
 
     @Override
@@ -123,7 +92,6 @@ public class DiaryTask {
         return "Задача " + getHeadline() +
                 ", описание: " + getDescription() +
                 ", тип задачи " + getTaskType() +
-                ", дата и время задачи " + getTaskTime() +
-                ", повторяемость задачи " + getRepeatability();
+                ", дата и время задачи " + getTaskTime();
     }
 }

@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        Map<Integer, DiaryTask> diary = new HashMap<>();
+        Map<Integer, Task> diary = new HashMap<>();
         try (Scanner scanner = new Scanner(System.in)) {
             label:
             while (true) {
@@ -32,7 +32,7 @@ public class Main {
         }
     }
 
-    private static void inputTask(Scanner scanner, Map<Integer, DiaryTask> map) {
+    private static void inputTask(Scanner scanner, Map<Integer, Task> map) {
         scanner.useDelimiter("\n");
 
         System.out.print("Введите название задачи: ");
@@ -148,14 +148,26 @@ public class Main {
             scanner.close();
         }
 
-        DiaryTask diaryTask = new DiaryTask(taskName, taskDescription, taskType, taskYear, taskMonth, taskDay, taskHour, taskMinute, taskRepeatability);
-        map.put(diaryTask.getId(), diaryTask);
+        Task task = null;
+        if (taskRepeatability.equals("однократно")) {
+            task = new OnceTask(taskName, taskDescription, taskType, taskYear, taskMonth, taskDay, taskHour, taskMinute);
+        } else if (taskRepeatability.equals("каждый день")) {
+            task = new DailyTask(taskName, taskDescription, taskType, taskYear, taskMonth, taskDay, taskHour, taskMinute);
+        } else if (taskRepeatability.equals("каждую неделю")) {
+            task = new WeeklyTask(taskName, taskDescription, taskType, taskYear, taskMonth, taskDay, taskHour, taskMinute);
+        } else if (taskRepeatability.equals("каждый месяц")) {
+            task = new MonthlyTask(taskName, taskDescription, taskType, taskYear, taskMonth, taskDay, taskHour, taskMinute);
+        } else if (taskRepeatability.equals("каждый год")) {
+            task = new YearlyTask(taskName, taskDescription, taskType, taskYear, taskMonth, taskDay, taskHour, taskMinute);
+        }
+        assert task != null;
+        map.put(task.getId(), task);
     }
 
-    public static void deleteTask(Scanner scanner, Map<Integer, DiaryTask> map) {
+    public static void deleteTask(Scanner scanner, Map<Integer, Task> map) {
         System.out.println("Все существующие задачи:");
         StringBuilder builder = new StringBuilder();
-        for (Map.Entry<Integer, DiaryTask> taskEntry : map.entrySet()) {
+        for (Map.Entry<Integer, Task> taskEntry : map.entrySet()) {
             builder.append("id = ").append(taskEntry.getKey()).append(" --> ").append(taskEntry.getValue());
             builder.append("\n");
         }
@@ -180,7 +192,7 @@ public class Main {
         }
     }
 
-    public static void findTask(Scanner scanner, Map<Integer, DiaryTask> map) {
+    public static void findTask(Scanner scanner, Map<Integer, Task> map) {
         scanner.useDelimiter("\n");
 
         System.out.print("Введите дату искомой задачи (год): ");
@@ -215,9 +227,9 @@ public class Main {
 
         int taskCounter = 0;
         printDelimiter();
-        for (DiaryTask diaryTask : map.values()) {
-            if (diaryTask.getTaskTime().toLocalDate().equals(LocalDate.of(taskYear, taskMonth, taskDay))) {
-                System.out.println(diaryTask.getHeadline() + ", " + diaryTask.getDescription());
+        for (Task task : map.values()) {
+            if (task.getTaskTime().toLocalDate().equals(LocalDate.of(taskYear, taskMonth, taskDay))) {
+                System.out.println(task.getHeadline() + ", " + task.getDescription());
                 taskCounter++;
             }
         }
